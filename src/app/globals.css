@@ -1,0 +1,305 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy: #14235a;
+  --navy-deep: #0c1638;
+  --navy-night: #080f26;
+  --navy-soft: #1d3070;
+  --navy-line: #24356e;
+  --orange: #f57a1c;
+  --orange-amber: #ff9440;
+  --orange-ember: #d96410;
+  --paper: #f4f5f8;
+  --steel-100: #e6e9f2;
+  --steel-300: #b9c0d4;
+  --steel-500: #7c87a6;
+  --steel-700: #4a5578;
+  --ok: #2fbf71;
+  --warn: #e8b931;
+  --danger: #e23d28;
+  --chamfer: 10px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* anchored sections clear the sticky navigation */
+section[id],
+div[id='metiers'] {
+  scroll-margin-top: 88px;
+}
+
+body {
+  background: var(--navy-night);
+  color: var(--paper);
+  font-family: 'Inter Variable', Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--orange);
+  color: #fff;
+}
+
+/* ---------- scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--navy-night);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--navy-soft);
+  border: 2px solid var(--navy-night);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--orange);
+}
+
+/* ---------- chamfered corners (logo's angular geometry) ---------- */
+.chamfer {
+  clip-path: polygon(
+    var(--chamfer) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer)),
+    calc(100% - var(--chamfer)) 100%,
+    0 100%,
+    0 var(--chamfer)
+  );
+}
+.chamfer-sm {
+  --chamfer: 6px;
+  clip-path: polygon(
+    var(--chamfer) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer)),
+    calc(100% - var(--chamfer)) 100%,
+    0 100%,
+    0 var(--chamfer)
+  );
+}
+
+/* ---------- two-tone brand rule (from the logo divider) ---------- */
+.brand-rule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 3px;
+}
+.brand-rule::before {
+  content: '';
+  flex: 1 1 58%;
+  height: 100%;
+  background: currentColor;
+}
+.brand-rule::after {
+  content: '';
+  flex: 1 1 42%;
+  height: 100%;
+  background: var(--orange);
+}
+
+/* ---------- speed slits motif (from the sliced M / E) ---------- */
+.slits {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    currentColor 0,
+    currentColor 3px,
+    transparent 3px,
+    transparent 9px
+  );
+}
+
+/* ---------- technical grid backgrounds ---------- */
+.grid-bg-dark {
+  background-image:
+    linear-gradient(rgba(36, 53, 110, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 53, 110, 0.35) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+.grid-bg-light {
+  background-image:
+    linear-gradient(rgba(20, 35, 90, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 35, 90, 0.07) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+.dot-bg-dark {
+  background-image: radial-gradient(rgba(124, 135, 166, 0.28) 1px, transparent 1.4px);
+  background-size: 26px 26px;
+}
+
+/* ---------- mono technical label ---------- */
+.tech-label {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* ---------- orange triangle marker (from the A counter) ---------- */
+.tri-marker {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 9px solid var(--orange);
+}
+.tri-marker-right {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid var(--orange);
+}
+
+/* ---------- status LEDs ---------- */
+.led {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  position: relative;
+}
+.led-ok {
+  background: var(--ok);
+  box-shadow: 0 0 8px rgba(47, 191, 113, 0.8);
+}
+.led-warn {
+  background: var(--warn);
+  box-shadow: 0 0 8px rgba(232, 185, 49, 0.8);
+}
+.led-idle {
+  background: var(--steel-500);
+}
+.led-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  animation: ledPulse 2s ease-out infinite;
+}
+@keyframes ledPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* ---------- dimension line ornament ---------- */
+.dim-line {
+  position: relative;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.5;
+}
+.dim-line::before,
+.dim-line::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  width: 1px;
+  height: 9px;
+  background: currentColor;
+}
+.dim-line::before {
+  left: 0;
+}
+.dim-line::after {
+  right: 0;
+}
+
+/* ---------- custom cursor ---------- */
+@media (pointer: fine) {
+  body.cursor-active,
+  body.cursor-active a,
+  body.cursor-active button,
+  body.cursor-active [role='button'] {
+    cursor: none;
+  }
+}
+
+/* ---------- marquee ---------- */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 36s linear infinite;
+}
+
+/* ---------- scan line on panels ---------- */
+@keyframes scanline {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.6;
+  }
+  92% {
+    opacity: 0.6;
+  }
+  100% {
+    top: calc(100% - 2px);
+    opacity: 0;
+  }
+}
+.scanline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(245, 122, 28, 0.5), transparent);
+  animation: scanline 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ---------- reveal helpers ---------- */
+.clip-reveal {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ---------- focus states ---------- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
+
+/* ---------- forms ---------- */
+input,
+textarea,
+select {
+  accent-color: var(--orange);
+}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

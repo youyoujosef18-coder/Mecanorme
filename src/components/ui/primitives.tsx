@@ -95,7 +95,7 @@ export function SectionHeader({
         </span>
       </div>
       <h2
-        className={`mt-4 whitespace-pre-line font-display text-4xl font-bold uppercase leading-[1.04] tracking-tight sm:text-5xl lg:text-6xl ${
+        className={`mt-4 whitespace-pre-line break-words font-display text-[30px] font-bold uppercase leading-[1.04] tracking-tight min-[380px]:text-4xl sm:text-5xl lg:text-6xl ${
           dark ? 'text-paper' : 'text-navy'
         }`}
       >

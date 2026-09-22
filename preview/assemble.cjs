@@ -8,6 +8,8 @@ const safeJs = js.replace(/<\/script/gi, '<\\/script');
 const safeCss = css.replace(/<\/style/gi, '<\\/style');
 
 const html = `<title>MECANORME</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#080F26" />
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
 

@@ -5,7 +5,13 @@ import { useLang } from '@/lib/i18n/LanguageProvider';
 import { MagneticButton } from '@/components/ui/primitives';
 import ServiceDiagram from '@/components/fallbacks/ServiceDiagram';
 import { useCursorHandlers } from '@/components/ui/CustomCursor';
-import { useIsMobile, usePrefersReducedMotion, useSectionProgress, useWebGLSupport } from '@/lib/hooks';
+import {
+  useIsMobile,
+  useIsPortrait,
+  usePrefersReducedMotion,
+  useSectionProgress,
+  useWebGLSupport,
+} from '@/lib/hooks';
 import HeroStage from '@/components/sections/HeroStage';
 import type { Waypoint } from '@/components/three/CinematicCamera';
 import { SERVICE_IDS, type ServiceId } from '@/lib/i18n/dict';
@@ -66,6 +72,7 @@ export default function Hero() {
   const drive = useCursorHandlers('drive');
   const explore = useCursorHandlers('explore');
   const mobile = useIsMobile(1024);
+  const portrait = useIsPortrait();
   const reduced = usePrefersReducedMotion();
   const webgl = useWebGLSupport();
 
@@ -122,6 +129,16 @@ export default function Hero() {
    */
   const waypoints = useMemo(() => {
     if (!mobile) return WAYPOINTS;
+    // a phone on its side is wide, not narrow: it gets the desktop framing, a touch further back
+    if (!portrait)
+      return WAYPOINTS.map((w) => ({
+        look: w.look,
+        pos: [
+          w.look[0] + (w.pos[0] - w.look[0]) * 1.12,
+          w.look[1] + (w.pos[1] - w.look[1]) * 1.12,
+          w.look[2] + (w.pos[2] - w.look[2]) * 1.12,
+        ] as [number, number, number],
+      }));
     // step back in plan only — lifting the eye as well would put the camera
     // above the slab and turn every interior stop into a view of a ceiling.
     const pullBack = (w: Waypoint, k: number): Waypoint => ({
@@ -139,7 +156,7 @@ export default function Hero() {
       9: { pos: [47, 17.5, 31], look: [0, 4.2, 0] },
     };
     return WAYPOINTS.map((w, i) => WIDE[i] ?? pullBack(w, 1.55));
-  }, [mobile]);
+  }, [mobile, portrait]);
 
   return (
     <section
@@ -163,6 +180,7 @@ export default function Hero() {
                 focusU={focusU}
                 focusRef={focusRef}
                 mobile={mobile}
+                portrait={portrait}
                 reduced={reduced}
               />
             )
@@ -182,7 +200,7 @@ export default function Hero() {
 
         {/* ---------------- headline overlay ---------------- */}
         <div
-          className="pointer-events-none relative z-10 mx-auto flex w-full max-w-[1500px] flex-1 flex-col justify-center px-5 pt-28 sm:px-8"
+          className="safe-x pointer-events-none relative z-10 mx-auto flex w-full min-h-0 max-w-[1500px] flex-1 flex-col justify-center overflow-hidden pt-28 [@media(max-height:560px)]:pt-14"
           style={{
             opacity: overlay,
             transform: `translateY(${(1 - overlay) * -50}px)`,
@@ -195,15 +213,15 @@ export default function Hero() {
               <span className="led led-ok led-pulse text-ok" aria-hidden />
               <span className="tech-label text-steel-300">{t.hero.kicker}</span>
             </div>
-            <h1 className="font-display text-[10vw] font-black uppercase leading-[0.94] tracking-tight text-paper sm:text-5xl lg:text-[3.9rem]">
+            <h1 className="font-display text-[10vw] font-black uppercase leading-[0.94] tracking-tight text-paper [@media(max-height:560px)]:text-3xl sm:text-5xl lg:text-[3.9rem]">
               {t.hero.line1} {t.hero.line1b}
               <br />
               <span>{t.hero.line2} </span>
               <span className="text-brand-orange">{t.hero.line2b}</span>
             </h1>
-            <div className="brand-rule mt-6 max-w-xs text-navy-line" aria-hidden />
-            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-steel-300 sm:text-base">{t.hero.sub}</p>
-            <div className="mt-8 flex flex-wrap items-center gap-3">
+            <div className="brand-rule mt-6 max-w-xs text-navy-line [@media(max-height:560px)]:hidden" aria-hidden />
+            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-steel-300 [@media(max-height:560px)]:hidden sm:text-base">{t.hero.sub}</p>
+            <div className="mt-8 flex flex-wrap items-center gap-3 [@media(max-height:560px)]:mt-4">
               <MagneticButton href="#contact">{t.hero.cta1}</MagneticButton>
               <MagneticButton href="#demonstration" variant="ghost">
                 {t.hero.cta2}
@@ -213,9 +231,9 @@ export default function Hero() {
         </div>
 
         {/* ---------------- stage readout + service selector ---------------- */}
-        <div className="relative z-10 mx-auto w-full max-w-[1500px] px-5 pb-3 sm:px-8 lg:pb-5">
+        <div className="safe-x relative z-10 mx-auto w-full shrink-0 max-w-[1500px] pb-3 lg:pb-5">
           {/* compact readout where there is no room for the full panel */}
-          <div className="mb-3 max-w-[38rem] lg:hidden">
+          <div className="chamfer-sm mb-3 max-w-[38rem] border border-navy-line/50 bg-navy-night/55 px-3 py-2 backdrop-blur-[2px] [@media(max-height:560px)]:mb-1.5 [@media(max-height:560px)]:py-1.5 lg:hidden">
             <div className="mb-1.5 flex items-center gap-2">
               {levelPills}
             </div>
@@ -223,7 +241,7 @@ export default function Hero() {
               <span className="mr-2 font-mono text-xs text-brand-orange">{String(stage).padStart(2, '0')}</span>
               {t.hero.stages[stage]}
             </p>
-            <p className="mt-1 text-[12px] leading-snug text-steel-400" style={CLAMP2}>
+            <p className="mt-1 text-[12px] leading-snug text-steel-400 [@media(max-height:560px)]:hidden" style={CLAMP2}>
               {detail.d}
             </p>
           </div>
@@ -264,7 +282,7 @@ export default function Hero() {
                     onClick={() => pick(id)}
                     aria-pressed={active}
                     {...explore}
-                    className={`chamfer-sm flex shrink-0 items-center gap-2 border px-3.5 py-2.5 text-left transition-all duration-300 ${
+                    className={`chamfer-sm flex min-h-[44px] shrink-0 items-center gap-2 border px-3.5 py-2.5 text-left transition-all duration-300 active:scale-[0.97] ${
                       active
                         ? 'border-brand-orange bg-brand-orange/15 text-paper'
                         : 'border-navy-line/70 bg-navy-night/55 text-steel-300 backdrop-blur-sm hover:border-steel-500 hover:text-paper'
@@ -284,8 +302,8 @@ export default function Hero() {
         </div>
 
         {/* ---------------- status strip ---------------- */}
-        <div className="relative z-10 border-t border-navy-line/50 bg-navy-night/60 backdrop-blur-sm">
-          <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-4 px-5 py-3.5 sm:px-8">
+        <div className="safe-inset-b relative z-10 shrink-0 border-t border-navy-line/50 bg-navy-night/60 backdrop-blur-sm">
+          <div className="safe-x mx-auto flex max-w-[1500px] flex-nowrap items-center justify-between gap-4 py-3.5 [@media(max-height:560px)]:py-2">
             <span className="flex min-w-0 items-center gap-2">
               <span className="led led-ok" aria-hidden />
               <span className="tech-label truncate text-steel-300">{t.hero.statusOnline}</span>

@@ -65,7 +65,7 @@ export default function Footer() {
           <p className="text-xs text-steel-700">
             © {year} MECANORME — {t.footer.tagline}. {t.footer.rights}
           </p>
-          <a href="#top" className="group flex items-center gap-2">
+          <a href="#top" className="group flex min-h-[40px] items-center gap-2">
             <span className="tech-label text-steel-500 transition-colors group-hover:text-brand-orange">{t.footer.top}</span>
             <span className="tri-marker" aria-hidden />
           </a>

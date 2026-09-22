@@ -34,14 +34,22 @@ export const metadata: Metadata = {
     siteName: 'MECANORME',
   },
   alternates: { canonical: '/' },
-  icons: { icon: '/favicon.svg' },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
   robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0C1638',
+  themeColor: '#080F26',
   width: 'device-width',
   initialScale: 1,
+  // draw under notches and gesture bars; fixed and sticky edges pad themselves with safe-area insets
+  viewportFit: 'cover',
 };
 
 const jsonLd = {
@@ -61,7 +69,7 @@ const jsonLd = {
     addressCountry: 'DZ',
   },
   areaServed: 'DZ',
-  openingHours: 'Sa-Th 08:00-16:00',
+  openingHours: 'Sa-Th 08:00-17:00',
   knowsAbout: [
     'Tuyauterie industrielle',
     'CVC',

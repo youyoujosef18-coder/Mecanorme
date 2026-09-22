@@ -6,6 +6,7 @@ import { Canvas } from '@react-three/fiber';
 import { Environment, Lightformer } from '@react-three/drei';
 import { QualityContext } from '@/components/three/quality';
 import CinematicCamera, { type Waypoint } from '@/components/three/CinematicCamera';
+import { useContextLossRecovery, useDeviceTier } from '@/lib/hooks';
 
 const BuildingScene = dynamic(() => import('@/components/three/scenes/BuildingScene'), { ssr: false });
 
@@ -19,6 +20,7 @@ function HeroStage({
   focusU,
   focusRef,
   mobile,
+  portrait = true,
   reduced,
 }: {
   waypoints: Waypoint[];
@@ -26,16 +28,33 @@ function HeroStage({
   focusU: MutableRefObject<number | null>;
   focusRef: MutableRefObject<number>;
   mobile: boolean;
+  portrait?: boolean;
   reduced: boolean;
 }) {
+  const device = useDeviceTier();
+  const recovery = useContextLossRecovery();
+  const weak = device.tier === 'weak';
+
   return (
     <Canvas
-      dpr={mobile ? [1, 1.25] : [1, 1.5]}
-      camera={{ position: waypoints[0].pos, fov: mobile ? 46 : 34, near: 0.3, far: 240 }}
-      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
-      onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
+      key={recovery.key}
+      dpr={[1, Math.min(device.maxDpr, mobile ? 1.35 : 1.5)]}
+      camera={{
+        position: waypoints[0].pos,
+        // portrait phones get the widened lens; a phone on its side keeps a tighter one
+        fov: mobile ? (portrait ? 46 : 38) : 34,
+        near: 0.3,
+        far: 240,
+      }}
+      gl={{ antialias: !weak, alpha: true, powerPreference: 'high-performance' }}
+      // the hero canvas never captures anything: the finger always scrolls the story
+      style={{ touchAction: 'pan-y' }}
+      onCreated={({ gl }) => {
+        gl.setClearColor(0x000000, 0);
+        recovery.attach(gl.domElement);
+      }}
     >
-      <QualityContext.Provider value={mobile ? 'low' : 'high'}>
+      <QualityContext.Provider value={mobile || weak ? 'low' : 'high'}>
         <ambientLight intensity={0.5} />
         <hemisphereLight args={['#cfdcf5', '#1a2650', 0.85]} />
         <directionalLight position={[18, 26, 14]} intensity={2.1} />

@@ -6,34 +6,47 @@ import { useLang } from '@/lib/i18n/LanguageProvider';
 import { Reveal } from '@/components/ui/primitives';
 import { useCursorHandlers } from '@/components/ui/CustomCursor';
 import LazyScene from '@/components/three/LazyScene';
+import { useIsCoarsePointer } from '@/lib/hooks';
 import ServiceDiagram from '@/components/fallbacks/ServiceDiagram';
 import type { ServiceId } from '@/lib/i18n/dict';
 
 const SceneShell = dynamic(() => import('@/components/three/SceneShell'), { ssr: false });
 
-const WaterScene = dynamic(() => import('@/components/three/scenes/WaterScene'), { ssr: false });
+const PipingScene = dynamic(() => import('@/components/three/scenes/PipingScene'), { ssr: false });
 const HVACScene = dynamic(() => import('@/components/three/scenes/HVACScene'), { ssr: false });
+const WaterScene = dynamic(() => import('@/components/three/scenes/WaterScene'), { ssr: false });
 const FireScene = dynamic(() => import('@/components/three/scenes/FireScene'), { ssr: false });
+const InsulationScene = dynamic(() => import('@/components/three/scenes/InsulationScene'), { ssr: false });
+const PlumbingScene = dynamic(() => import('@/components/three/scenes/PlumbingScene'), { ssr: false });
 
 type Shot = {
-  id: ServiceId;
   Scene: ComponentType<{ mode: number; labels: string[] }>;
+  /** which of the scene's four states the vignette plays */
   mode: number;
   camera: [number, number, number];
   target: [number, number, number];
   fov: number;
 };
 
-/** Each case study runs its own live system rather than a still photograph. */
-const SHOTS: Shot[] = [
-  { id: 'water', Scene: WaterScene, mode: 3, camera: [4.7, 2.1, 5.7], target: [0.25, -0.35, 0], fov: 34 },
-  { id: 'hvac', Scene: HVACScene, mode: 1, camera: [4.0, 2.0, 4.6], target: [0.1, -0.2, 0], fov: 34 },
-  { id: 'fire', Scene: FireScene, mode: 2, camera: [3.4, 1.4, 4.6], target: [0.6, -0.2, 0], fov: 36 },
-];
+/**
+ * Each case study runs its own live system rather than a still photograph —
+ * one per trade, framed for the 16:10 vignette. Cards pick their shot by the
+ * trade id carried in the copy, so the order lives in one place (dict.ts).
+ */
+const SHOTS: Record<ServiceId, Shot> = {
+  piping: { Scene: PipingScene, mode: 0, camera: [5.0, 2.5, 5.9], target: [0.25, -0.3, 0], fov: 34 },
+  hvac: { Scene: HVACScene, mode: 1, camera: [4.0, 2.0, 4.6], target: [0.1, -0.2, 0], fov: 34 },
+  water: { Scene: WaterScene, mode: 3, camera: [4.7, 2.1, 5.7], target: [0.25, -0.35, 0], fov: 34 },
+  fire: { Scene: FireScene, mode: 2, camera: [3.4, 1.4, 4.6], target: [0.6, -0.2, 0], fov: 36 },
+  insulation: { Scene: InsulationScene, mode: 3, camera: [1.0, 2.3, 8.4], target: [0.1, -0.2, 0], fov: 34 },
+  plumbing: { Scene: PlumbingScene, mode: 1, camera: [6.2, 3.0, 7.5], target: [0, -0.15, 0], fov: 34 },
+};
 
 export default function Projects() {
   const { t } = useLang();
   const view = useCursorHandlers('view');
+  // vignettes never capture a finger: on touch screens they are display-only
+  const coarse = useIsCoarsePointer();
 
   return (
     <section id="interventions" className="relative bg-navy-night py-24 lg:py-32">
@@ -53,9 +66,9 @@ export default function Projects() {
           </div>
         </Reveal>
 
-        <div className="mt-16 flex flex-col gap-20">
+        <div className="mt-16 flex flex-col gap-16 lg:gap-20">
           {t.projects.items.map((p, i) => {
-            const shot = SHOTS[i];
+            const shot = SHOTS[p.id];
             return (
               <Reveal key={p.t}>
                 <article
@@ -78,7 +91,7 @@ export default function Projects() {
                       aria-hidden
                     />
                     <div className="absolute inset-0">
-                      <LazyScene fallback={<ServiceDiagram id={shot.id} />} rootMargin="80px 0px 80px 0px">
+                      <LazyScene fallback={<ServiceDiagram id={p.id} />} rootMargin="80px 0px 80px 0px">
                         <SceneShell
                           camera={shot.camera}
                           target={shot.target}
@@ -89,6 +102,7 @@ export default function Projects() {
                           floor={null}
                           minPolar={Math.PI / 3.4}
                           maxPolar={Math.PI / 2.1}
+                          interactive={!coarse}
                         >
                           <shot.Scene mode={shot.mode} labels={[]} />
                         </SceneShell>

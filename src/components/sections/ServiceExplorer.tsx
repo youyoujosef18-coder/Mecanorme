@@ -87,6 +87,8 @@ export default function ServiceExplorer() {
   const [activeId, setActiveId] = useState<ServiceId>('piping');
   const [mode, setMode] = useState(0);
   const [wipe, setWipe] = useState(false);
+  // on touch screens rotation is opt-in, so a finger over the scene scrolls the page by default
+  const [rotate, setRotate] = useState(false);
   const coarse = useIsCoarsePointer();
   const explore = useCursorHandlers('explore');
   const drive = useCursorHandlers('drive');
@@ -168,7 +170,23 @@ export default function ServiceExplorer() {
                 <span className="mr-3 font-mono text-sm text-brand-orange">{def.index}</span>
                 {copy.name}
               </h3>
-              <span className="tech-label hidden text-steel-500 md:block">{coarse ? t.explorer.tapInteract : t.explorer.interact}</span>
+              {coarse ? (
+                <button
+                  type="button"
+                  onClick={() => setRotate((r) => !r)}
+                  aria-pressed={rotate}
+                  className={`chamfer-sm flex min-h-[40px] items-center gap-2 border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider2 transition-colors ${
+                    rotate
+                      ? 'border-brand-orange bg-brand-orange/15 text-brand-orange'
+                      : 'border-navy-line/70 text-steel-400'
+                  }`}
+                >
+                  <span className={`led ${rotate ? 'led-ok' : ''}`} aria-hidden />
+                  {rotate ? t.explorer.rotateOn : t.explorer.rotateOff}
+                </button>
+              ) : (
+                <span className="tech-label text-steel-500">{t.explorer.interact}</span>
+              )}
             </div>
             <p className="mt-2 max-w-2xl text-sm leading-relaxed text-steel-300">{copy.desc}</p>
 
@@ -183,6 +201,7 @@ export default function ServiceExplorer() {
                   fov={36}
                   zoom={false}
                   floor={-1.95}
+                  interactive={!coarse || rotate}
                 >
                   <Scene mode={mode} labels={labels} />
                 </SceneShell>

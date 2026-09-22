@@ -54,5 +54,6 @@ src/
 ## Notes
 
 - Les valeurs de l'encart « État système » sont une **simulation visuelle**, signalée comme telle sous le panneau. Elles ne prétendent pas venir d'un site réel.
-- Les visuels des interventions sont des **scènes 3D en direct**, pas des photos. Pour les remplacer par de vraies photos de chantier, modifiez `src/components/sections/Projects.tsx`.
+- « Ce que nous réalisons » présente **une réalisation par métier (six cartes)**, chacune avec sa scène 3D en direct plutôt qu'une photo. Chaque carte porte l'identifiant de son métier dans `src/lib/i18n/dict.ts` → `projects.items[].id` : l'ordre et les textes se changent là, le cadrage 3D (caméra, état affiché) dans `SHOTS` de `src/components/sections/Projects.tsx`. Pour passer à de vraies photos de chantier, remplacez le bloc `LazyScene` de ce fichier.
+- Sur écran tactile, les vignettes 3D ne capturent jamais le doigt (le défilement reste libre) ; dans l'explorateur, la rotation s'active avec le bouton « Pivoter la vue ».
 - Le formulaire de contact ouvre la messagerie du visiteur (`mailto:`) avec la demande pré-remplie. Pour un vrai backend, remplacez `onSubmit` dans `src/components/sections/Contact.tsx`.

@@ -26,7 +26,7 @@ export default function Contact() {
   };
 
   const inputCls =
-    'w-full border border-navy-line/60 bg-navy-deep/60 px-4 py-3.5 text-sm text-paper placeholder:text-steel-700 focus:border-brand-orange focus:outline-none transition-colors';
+    'w-full border border-navy-line/60 bg-navy-deep/60 px-4 py-3.5 text-base text-paper placeholder:text-steel-700 focus:border-brand-orange focus:outline-none transition-colors sm:text-sm';
 
   return (
     <section id="contact" className="relative bg-navy-night py-24 lg:py-32">
